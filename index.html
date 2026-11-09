@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Urenlogger · Rechtspraak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#DCE0CD">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Uren">
+<style>
+  :root{
+    --sage-100:#DCE0CD; --sage-300:#B8C1A6; --ink:#182013; --ink-deep:#061205; --ink-soft:#4A5446;
+    --orange:#D34C1F; --concrete:#BAB3A9; --charcoal:#2E3339;
+    --radius-sm:6px; --radius-lg:28px; --panel:rgba(255,255,255,.55);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--sage-100);color:var(--ink);font:16px/1.45 "Schibsted Grotesk",system-ui,sans-serif;
+    background-image:linear-gradient(rgba(24,32,19,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(24,32,19,.06) 1px,transparent 1px);
+    background-size:54px 54px;background-position:-1px -1px}
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 20px 60px}
+  header{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+  header img.logo{height:46px;width:auto;display:block}
+  header .sp{flex:1}
+  .mono,label,th,.status,.stat span,.foot,summary{font-family:"DM Mono",ui-monospace,monospace;font-weight:500;text-transform:uppercase;letter-spacing:.1em}
+  .tagline{font-size:.7rem;color:var(--ink-soft);margin:0}
+  .o{color:var(--orange)}
+  .card{background:var(--panel);border-radius:var(--radius-lg);padding:26px}
+  .grid{display:grid;gap:22px}
+  .two{grid-template-columns:1fr 1fr}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  h2{margin:0 0 16px;font-size:1.25rem;font-weight:800;letter-spacing:-.03em}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:center;position:relative;overflow:hidden;padding:26px 32px}
+  .mascotwrap{position:relative;height:300px;display:flex;align-items:flex-end;justify-content:center}
+  .mascotwrap img{height:80%;width:auto;object-fit:contain;transform-origin:50% 100%}
+  .hero.active .mascotwrap img{animation:wiggle 1.6s ease-in-out infinite}
+  @keyframes wiggle{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-4px)}}
+  .bubble{position:absolute;top:0;left:50%;transform:translateX(-50%);width:max-content;background:var(--ink);color:var(--sage-100);font-weight:700;font-size:.95rem;letter-spacing:-.01em;padding:10px 16px;border-radius:var(--radius-lg);max-width:220px;text-align:center}
+  .bubble::after{content:"";position:absolute;left:calc(50% - 8px);bottom:-7px;width:16px;height:16px;background:var(--ink);transform:rotate(45deg);border-radius:var(--radius-sm)}
+  @media(max-width:700px){.hero{grid-template-columns:1fr;text-align:center;padding:22px}.mascotwrap{height:230px}.btns{justify-content:center}}
+  .status{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--ink);color:var(--sage-100);font-size:.72rem}
+  .hero.active .status{background:var(--orange);color:#fff}
+  .earn{font-size:clamp(3rem,10vw,5.6rem);font-weight:800;letter-spacing:-.045em;line-height:.95;margin:14px 0 4px;font-variant-numeric:tabular-nums}
+  .clock{font-family:"DM Mono",monospace;font-weight:500;font-size:1.5rem;letter-spacing:.08em;font-variant-numeric:tabular-nums}
+  .hero small{color:var(--ink-soft)}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  button{font:inherit;font-weight:700;cursor:pointer;border:2px solid var(--ink);border-radius:999px;padding:10px 20px;background:transparent;color:var(--ink);transition:background .12s,color .12s,transform .08s}
+  button:hover{background:var(--ink);color:var(--sage-100)}
+  button:active{transform:scale(.97)}
+  button:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  .go,.stop{background:var(--ink);color:var(--sage-100);font-size:1.1rem;padding:14px 30px;letter-spacing:-.01em}
+  .go:hover,.stop:hover{background:var(--ink-deep)}
+  .go .o,.stop .o{font-size:1.3rem}
+  .small{padding:5px 14px;font-size:.85rem}
+  input{font:inherit;border:2px solid var(--ink);border-radius:var(--radius-sm);padding:10px 12px;background:#fff;color:var(--ink);width:100%;min-width:0}
+  .hero input{max-width:360px}
+  label{font-size:.7rem;color:var(--ink-soft);display:block;margin-bottom:5px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+
+  /* month */
+  .monthbar{display:flex;align-items:center;gap:12px;margin:36px 0 16px}
+  .monthbar h2{margin:0;flex:1;text-transform:capitalize;font-size:2rem;letter-spacing:-.04em}
+  @media(max-width:480px){.monthbar h2{font-size:1.45rem}}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:760px){.stats{grid-template-columns:1fr 1fr}}
+  .stat{border-radius:var(--radius-sm);padding:16px 18px;background:var(--panel)}
+  .stat b{display:block;font-size:1.6rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:4px}
+  .stat span{font-size:.68rem;color:var(--ink-soft)}
+  .stat.main{background:var(--sage-300)}.stat.main span{color:var(--ink)}
+  .stat.total{background:var(--ink);color:var(--sage-100)}.stat.total span{color:var(--sage-300)}
+  .foot{font-size:.68rem;color:var(--ink-soft)}
+
+  /* lists */
+  table{width:100%;border-collapse:collapse}
+  td,th{padding:10px 6px;border-bottom:1px solid rgba(24,32,19,.15);text-align:left;vertical-align:top}
+  th{font-size:.66rem;color:var(--ink-soft)}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .empty{color:var(--ink-soft);padding:8px 0}
+  .x{border:none;padding:2px 10px;color:var(--ink-soft);font-size:1.1rem}
+  .x:hover{background:var(--ink);color:var(--sage-100)}
+  details{margin-top:26px}
+  summary{cursor:pointer;font-size:.75rem}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo" src="assets/logo-squared.png" alt="Squared Media">
+    <span class="sp"></span>
+    <button class="small" id="btnSettings" title="Instellingen">Tarief: <span id="rateLabel"></span>/u</button>
+  </header>
+
+  <!-- HERO: in/uitchecken -->
+  <section class="card hero" id="hero">
+    <div class="mascotwrap">
+      <img src="assets/mascot-wave.png" alt="Mascotte van Squared Media">
+      <div class="bubble" id="bubble">Klaar voor een nieuwe dag?</div>
+    </div>
+
+    <div>
+      <span class="status" id="statusTxt">Uitgecheckt</span>
+      <p class="earn" id="liveEarn"><span class="o">€</span> 0,00</p>
+      <div class="clock" id="liveClock">0:00:00</div>
+      <small id="liveSub">Klaar om te beginnen? Check in!</small>
+      <div class="btns">
+        <input id="note" placeholder="Waar werk je aan? (optioneel)" aria-label="Omschrijving">
+      </div>
+      <div class="btns">
+        <button class="go" id="btnIn"><span class="o">▶</span> Inchecken</button>
+        <button class="stop" id="btnOut" style="display:none"><span class="o">■</span> Uitchecken</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAAND -->
+  <div class="monthbar">
+    <button class="small" id="prev" aria-label="Vorige maand">◀</button>
+    <h2 id="monthTitle"></h2>
+    <button class="small" id="next" aria-label="Volgende maand">▶</button>
+  </div>
+  <section class="stats">
+    <div class="stat main"><span>Verdiend (live)</span><b id="mEarn">€ 0,00</b></div>
+    <div class="stat"><span>Uren</span><b id="mHours">0u 00m</b></div>
+    <div class="stat"><span>Extra kosten</span><b id="mCosts">€ 0,00</b></div>
+    <div class="stat total"><span>Totaal ex btw</span><b id="mTotal">€ 0,00</b></div>
+  </section>
+  <p class="foot" style="margin:12px 2px 0" id="btwLine"></p>
+
+  <!-- FORMS -->
+  <div class="grid two" style="margin-top:22px">
+    <section class="card">
+      <h2>Uren handmatig toevoegen</h2>
+      <form id="formHours">
+        <div class="row"><div><label for="hDate">Datum</label><input type="date" id="hDate" required></div>
+          <div><label for="hNote">Omschrijving</label><input id="hNote" placeholder="Optioneel"></div></div>
+        <div class="row"><div><label for="hFrom">Van</label><input type="time" id="hFrom" required></div>
+          <div><label for="hTo">Tot</label><input type="time" id="hTo" required></div></div>
+        <button type="submit">+ Toevoegen</button>
+      </form>
+    </section>
+    <section class="card">
+      <h2>Extra kosten</h2>
+      <form id="formCost">
+        <div class="row"><div><label for="cDate">Datum</label><input type="date" id="cDate" required></div>
+          <div><label for="cAmount">Bedrag ex btw (€)</label><input type="number" id="cAmount" step="0.01" min="0.01" inputmode="decimal" required></div></div>
+        <div style="margin-bottom:10px"><label for="cDesc">Omschrijving</label><input id="cDesc" placeholder="Bijv. reiskosten, parkeren" required></div>
+        <button type="submit">+ Toevoegen</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- LIJSTEN -->
+  <section class="card" style="margin-top:22px">
+    <h2>Gelogde uren</h2>
+    <div id="listHours"></div>
+  </section>
+  <section class="card" style="margin-top:22px">
+    <h2>Extra kosten</h2>
+    <div id="listCosts"></div>
+  </section>
+
+  <details>
+    <summary>Export & back-up</summary>
+    <div class="btns">
+      <button class="small" id="btnCsv">Maand als CSV (factuurregels)</button>
+      <button class="small" id="btnBackup">Back-up (JSON)</button>
+      <button class="small" id="btnRestore">Back-up terugzetten</button>
+      <input type="file" id="fileRestore" accept="application/json" style="display:none">
+    </div>
+    <p class="foot">Alles wordt lokaal in deze browser opgeslagen. Maak af en toe een back-up.</p>
+  </details>
+  <p class="foot" style="text-align:center;margin-top:30px">SQUARED-MEDIA.NL · eerste versie</p>
+</div>
+
+<script>
+(() => {
+  const KEY = 'urenlogger.v1';
+  const $ = id => document.getElementById(id);
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+  // ---------- state ----------
+  const defaults = { rate: 65, btw: 21, entries: [], costs: [], active: null };
+  let S = load();
+  function load() {
+    try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem(KEY)) || {}); }
+    catch { return { ...defaults, entries: [], costs: [] }; }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { alert('Opslaan in de browser is mislukt.'); }
+  }
+  let view = new Date(); view.setDate(1); view.setHours(0, 0, 0, 0);
+
+  // ---------- helpers ----------
+  const eur = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
+  const money = n => eur.format(n);
+  const moneyBig = n => money(n).replace('€','<span class="o">€</span>');
+  const pad = n => String(n).padStart(2, '0');
+  const earn = ms => ms / 3600000 * S.rate;
+  const hms = ms => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 3600)}:${pad(Math.floor(s % 3600 / 60))}:${pad(s % 60)}`; };
+  const hm = ms => { const m = Math.round(ms / 60000); return `${Math.floor(m / 60)}u ${pad(m % 60)}m`; };
+  const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const fmtDate = d => new Date(d).toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+  const fmtTime = t => new Date(t).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const inView = t => { const d = new Date(t); return d.getFullYear() === view.getFullYear() && d.getMonth() === view.getMonth(); };
+  const isCurrentView = () => { const n = new Date(); return n.getFullYear() === view.getFullYear() && n.getMonth() === view.getMonth(); };
+  const costDate = c => new Date(c.date + 'T12:00:00');
+
+  // ---------- check in / out ----------
+  $('btnIn').onclick = () => {
+    if (S.active) return;
+    S.active = { start: Date.now(), note: $('note').value.trim() };
+    save(); render();
+  };
+  $('btnOut').onclick = () => {
+    if (!S.active) return;
+    const end = Date.now();
+    if (end - S.active.start >= 1000) {
+      S.entries.push({ id: uid(), start: S.active.start, end, note: S.active.note || $('note').value.trim() });
+    }
+    S.active = null; $('note').value = '';
+    save(); render();
+  };
+
+  // ---------- forms ----------
+  $('formHours').onsubmit = e => {
+    e.preventDefault();
+    const start = new Date(`${$('hDate').value}T${$('hFrom').value}`).getTime();
+    const end = new Date(`${$('hDate').value}T${$('hTo').value}`).getTime();
+    if (!(end > start)) return alert('"Tot" moet later zijn dan "Van".');
+    S.entries.push({ id: uid(), start, end, note: $('hNote').value.trim() });
+    save(); $('hNote').value = ''; render();
+  };
+  $('formCost').onsubmit = e => {
+    e.preventDefault();
+    const amount = parseFloat($('cAmount').value);
+    if (!(amount > 0)) return;
+    S.costs.push({ id: uid(), date: $('cDate').value, desc: $('cDesc').value.trim(), amount });
+    save(); $('cDesc').value = ''; $('cAmount').value = ''; render();
+  };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    if (!confirm('Verwijderen?')) return;
+    const [type, id] = b.dataset.del.split(':');
+    if (type === 'e') S.entries = S.entries.filter(x => x.id !== id);
+    else S.costs = S.costs.filter(x => x.id !== id);
+    save(); render();
+  });
+
+  // ---------- month nav ----------
+  $('prev').onclick = () => { view.setMonth(view.getMonth() - 1); render(); };
+  $('next').onclick = () => { view.setMonth(view.getMonth() + 1); render(); };
+
+  // ---------- settings ----------
+  $('btnSettings').onclick = () => {
+    const r = prompt('Uurtarief ex btw (€):', S.rate); if (r === null) return;
+    const rate = parseFloat(String(r).replace(',', '.'));
+    if (!(rate > 0)) return alert('Ongeldig tarief.');
+    const v = prompt('Btw-percentage:', S.btw); if (v === null) return;
+    const btw = parseFloat(String(v).replace(',', '.'));
+    if (!(btw >= 0)) return alert('Ongeldig percentage.');
+    S.rate = rate; S.btw = btw; save(); render();
+  };
+
+  // ---------- export ----------
+  const download = (name, text, type) => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $('btnCsv').onclick = () => {
+    // Factuurindeling: één regel per dag (uren, naar boven afgerond per half uur) + één regel per kostenpost
+    const q = s => `"${String(s ?? '').replace(/"/g, '""')}"`;
+    const nl = (n, d) => n.toFixed(d).replace(/\.?0+$/, '').replace('.', ',');
+    const rows = [['Datum', 'Omschrijving', 'Aantal', 'Prijs ex btw', 'Btw %', 'Totaal ex btw']];
+    const days = {};
+    S.entries.filter(x => inView(x.start)).forEach(x => {
+      const k = ymd(new Date(x.start)); (days[k] = days[k] || { ms: 0, notes: [] });
+      days[k].ms += x.end - x.start; if (x.note && !days[k].notes.includes(x.note)) days[k].notes.push(x.note);
+    });
+    Object.keys(days).sort().forEach(k => {
+      const h = Math.ceil(Math.round(days[k].ms / 60000) / 30) / 2, d = days[k]; // per dag naar boven afgerond op halve uren
+      rows.push([k, ['Uren ' + fmtDate(k + 'T12:00:00'), ...d.notes].join(' - '), nl(h, 4), nl(S.rate, 2), nl(S.btw, 2), (h * S.rate).toFixed(2).replace('.', ',')]);
+    });
+    S.costs.filter(c => inView(costDate(c))).sort((a, b) => a.date.localeCompare(b.date)).forEach(c =>
+      rows.push([c.date, 'Extra kosten: ' + c.desc, '1', nl(c.amount, 2), nl(S.btw, 2), c.amount.toFixed(2).replace('.', ',')]));
+    download(`uren-${view.getFullYear()}-${pad(view.getMonth() + 1)}.csv`, '﻿' + rows.map(r => r.map(q).join(';')).join('\n'), 'text/csv');
+  };
+  $('btnBackup').onclick = () => download(`urenlogger-backup-${ymd(new Date())}.json`, JSON.stringify(S, null, 2), 'application/json');
+  $('btnRestore').onclick = () => $('fileRestore').click();
+  $('fileRestore').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!Array.isArray(d.entries) || !Array.isArray(d.costs)) throw 0;
+      if (!confirm('Dit vervangt je huidige gegevens. Doorgaan?')) return;
+      S = Object.assign({}, defaults, d); save(); render();
+    } catch { alert('Dit is geen geldig back-upbestand.'); }
+    e.target.value = '';
+  };
+
+  // ---------- rendering ----------
+  function monthTotals() {
+    const ents = S.entries.filter(x => inView(x.start));
+    let ms = ents.reduce((a, x) => a + (x.end - x.start), 0);
+    if (S.active && inView(S.active.start)) ms += Date.now() - S.active.start;
+    const costs = S.costs.filter(c => inView(costDate(c))).reduce((a, c) => a + c.amount, 0);
+    return { ents, ms, costs };
+  }
+
+  // lichte tick: alleen de live getallen
+  function tick() {
+    const act = S.active, now = Date.now();
+    if (act) {
+      const ms = now - act.start;
+      $('liveEarn').innerHTML = moneyBig(earn(ms));
+      $('liveClock').textContent = hms(ms);
+    }
+    const t = monthTotals();
+    $('mEarn').textContent = money(earn(t.ms));
+    $('mHours').textContent = hm(t.ms);
+    $('mTotal').textContent = money(earn(t.ms) + t.costs);
+    $('mCosts').textContent = money(t.costs);
+    const sub = earn(t.ms) + t.costs;
+    $('btwLine').textContent = `Incl. ${S.btw}% btw: ${money(sub * (1 + S.btw / 100))} (btw ${money(sub * S.btw / 100)})`;
+  }
+
+  function render() {
+    const act = S.active;
+    $('rateLabel').textContent = money(S.rate).replace(',00','');
+    $('hero').classList.toggle('active', !!act);
+    $('btnIn').style.display = act ? 'none' : '';
+    $('btnOut').style.display = act ? '' : 'none';
+    $('statusTxt').textContent = act ? 'Ingecheckt' : 'Uitgecheckt';
+    $('bubble').textContent = act ? 'Aan het werk. Ik tel mee!' : 'Klaar voor een nieuwe dag?';
+    if (act) {
+      $('liveSub').textContent = `Sinds ${fmtTime(act.start)} · ${money(S.rate)} per uur`;
+      if (document.activeElement !== $('note')) $('note').value = act.note || '';
+    } else {
+      $('liveEarn').innerHTML = moneyBig(0);
+      $('liveClock').textContent = '0:00:00';
+      $('liveSub').textContent = 'Klaar om te beginnen? Check in!';
+    }
+    $('monthTitle').textContent = view.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
+
+    const t = monthTotals();
+    const ents = [...t.ents].sort((a, b) => b.start - a.start);
+    $('listHours').innerHTML = ents.length ? `<table><thead><tr><th>Datum</th><th>Tijd</th><th>Omschrijving</th><th class="r">Uren</th><th class="r">Bedrag</th><th></th></tr></thead><tbody>` +
+      ents.map(x => `<tr><td>${fmtDate(x.start)}</td><td>${fmtTime(x.start)}–${fmtTime(x.end)}</td><td>${esc(x.note)}</td><td class="r">${hm(x.end - x.start)}</td><td class="r">${money(earn(x.end - x.start))}</td><td class="r"><button class="x" data-del="e:${x.id}" aria-label="Verwijder">✕</button></td></tr>`).join('') + '</tbody></table>'
+      : '<div class="empty">Nog geen uren in deze maand.</div>';
+
+    const costs = S.costs.filter(c => inView(costDate(c))).sort((a, b) => b.date.localeCompare(a.date));
+    $('listCosts').innerHTML = costs.length ? `<table><thead><tr><th>Datum</th><th>Omschrijving</th><th class="r">Ex btw</th><th></th></tr></thead><tbody>` +
+      costs.map(c => `<tr><td>${fmtDate(costDate(c))}</td><td>${esc(c.desc)}</td><td class="r">${money(c.amount)}</td><td class="r"><button class="x" data-del="c:${c.id}" aria-label="Verwijder">✕</button></td></tr>`).join('') + '</tbody></table>'
+      : '<div class="empty">Geen extra kosten in deze maand.</div>';
+    tick();
+  }
+
+  // defaults voor datumvelden
+  const today = ymd(new Date());
+  $('hDate').value = today; $('cDate').value = today;
+  $('hFrom').value = '09:00'; $('hTo').value = '17:00';
+
+  render();
+  setInterval(tick, 250);
+  try { if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js'); } catch {}
+  // sync tussen tabs
+  window.addEventListener('storage', e => { if (e.key === KEY) { S = load(); render(); } });
+})();
+</script>
+</body>
+</html>
