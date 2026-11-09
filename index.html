@@ -41,7 +41,7 @@
   .mascotwrap img{height:80%;width:auto;object-fit:contain;transform-origin:50% 100%}
   .hero.active .mascotwrap img{animation:wiggle 1.6s ease-in-out infinite}
   @keyframes wiggle{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-4px)}}
-  .bubble{position:absolute;top:0;left:50%;transform:translateX(-50%);width:max-content;background:var(--ink);color:var(--sage-100);font-weight:700;font-size:.95rem;letter-spacing:-.01em;padding:10px 16px;border-radius:var(--radius-lg);max-width:220px;text-align:center}
+  .bubble{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:max-content;background:var(--ink);color:var(--sage-100);font-weight:700;font-size:.95rem;letter-spacing:-.01em;padding:10px 16px;border-radius:var(--radius-lg);max-width:270px;text-align:center;line-height:1.25}
   .bubble::after{content:"";position:absolute;left:calc(50% - 8px);bottom:-7px;width:16px;height:16px;background:var(--ink);transform:rotate(45deg);border-radius:var(--radius-sm)}
   @media(max-width:700px){.hero{grid-template-columns:1fr;text-align:center;padding:22px}.mascotwrap{height:230px}.btns{justify-content:center}}
   .status{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--ink);color:var(--sage-100);font-size:.72rem}
@@ -62,6 +62,39 @@
   .hero input{max-width:360px}
   label{font-size:.7rem;color:var(--ink-soft);display:block;margin-bottom:5px}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+
+  .times{display:grid;grid-template-columns:repeat(2,minmax(0,170px));gap:12px;margin-top:16px}
+  .hint{display:block;margin-top:8px;color:var(--ink-soft);font-size:.8rem}
+  @media(max-width:700px){.times{justify-content:center;margin-inline:auto}}
+
+  /* feest */
+  #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:90}
+  .banner{position:fixed;left:50%;top:18px;transform:translate(-50%,-170%);z-index:100;background:var(--ink);color:var(--sage-100);border-radius:var(--radius-lg);padding:14px 30px 16px;text-align:center;box-shadow:0 14px 40px rgba(24,32,19,.35);visibility:hidden;transition:transform .55s cubic-bezier(.2,1.5,.4,1),visibility 0s linear .6s;max-width:calc(100vw - 32px);pointer-events:none}
+  .banner.show{transform:translate(-50%,0);visibility:visible;transition-delay:0s}
+  .banner .lbl{font-family:"DM Mono",monospace;font-weight:500;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-300)}
+  .banner .amt{font-size:clamp(2.6rem,10vw,4rem);font-weight:800;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+  .banner .msg{font-weight:700;margin-top:6px}
+  .banner .amt{white-space:nowrap}
+  .banner.big .amt,.banner.mega .amt{font-size:clamp(2.6rem,11vw,5.4rem)}
+  .hero .mascotwrap img.party{animation:jump .7s ease-out 3}
+  @keyframes jump{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-38px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}100%{transform:translateY(0) rotate(0)}}
+
+  /* inloggen */
+  [hidden]{display:none!important}
+  .authwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+  .authcard{width:100%;max-width:420px;background:var(--panel);border-radius:var(--radius-lg);padding:32px 28px;text-align:center}
+  .authcard img.logo{height:50px;width:auto;margin-bottom:6px}
+  .authcard .masc{height:150px;width:auto;display:block;margin:8px auto 4px}
+  .authcard h1{font-size:1.6rem;letter-spacing:-.04em;margin:6px 0 16px;font-weight:800}
+  .authcard form{text-align:left;display:grid;gap:12px}
+  .authcard .go{width:100%;margin-top:4px}
+  .authmsg{margin:14px 0 0;padding:10px 12px;border-radius:var(--radius-sm);background:rgba(211,76,31,.13);text-align:left;font-weight:600;font-size:.92rem}
+  .authmsg.ok{background:rgba(24,32,19,.08)}
+  .linkbtn{border:none;background:none;padding:6px;font-size:.85rem;text-decoration:underline;color:var(--ink-soft);margin-top:6px}
+  .linkbtn:hover{background:none;color:var(--ink)}
+  #syncState{position:fixed;left:16px;bottom:16px;z-index:80;background:var(--ink);color:var(--sage-100);font-family:"DM Mono",monospace;font-weight:500;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s}
+  #syncState.show{opacity:1}
+  header{flex-wrap:wrap}
 
   /* month */
   .monthbar{display:flex;align-items:center;gap:12px;margin:36px 0 16px}
@@ -90,11 +123,32 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div id="auth" class="authwrap" hidden>
+  <div class="authcard">
+    <img class="logo" src="assets/logo-squared.png" alt="Squared Media">
+    <img class="masc" src="assets/mascot-wave.png" alt="">
+    <h1 id="authTitle">Inloggen</h1>
+    <form id="formLogin">
+      <div><label for="aEmail">E-mailadres</label><input type="email" id="aEmail" autocomplete="username" required></div>
+      <div><label for="aPass">Wachtwoord</label><input type="password" id="aPass" autocomplete="current-password" required></div>
+      <button class="go" type="submit" id="btnLogin">Inloggen</button>
+    </form>
+    <form id="formNewPass" hidden>
+      <div><label for="nPass">Nieuw wachtwoord (minimaal 8 tekens)</label><input type="password" id="nPass" autocomplete="new-password" minlength="8" required></div>
+      <div><label for="nPass2">Herhaal wachtwoord</label><input type="password" id="nPass2" autocomplete="new-password" minlength="8" required></div>
+      <button class="go" type="submit">Wachtwoord opslaan</button>
+    </form>
+    <button class="linkbtn" id="btnForgot" type="button">Wachtwoord vergeten?</button>
+    <div class="authmsg" id="authMsg" role="status" hidden></div>
+  </div>
+</div>
+<div id="syncState" role="status" aria-live="polite"></div>
+<div class="wrap" id="app">
   <header>
     <img class="logo" src="assets/logo-squared.png" alt="Squared Media">
     <span class="sp"></span>
     <button class="small" id="btnSettings" title="Instellingen">Tarief: <span id="rateLabel"></span>/u</button>
+    <button class="small" id="btnLogout" hidden>Uitloggen</button>
   </header>
 
   <!-- HERO: in/uitchecken -->
@@ -112,6 +166,11 @@
       <div class="btns">
         <input id="note" placeholder="Waar werk je aan? (optioneel)" aria-label="Omschrijving">
       </div>
+      <div class="times">
+        <div><label for="tIn">Begintijd</label><input type="time" id="tIn"></div>
+        <div><label for="tOut">Eindtijd</label><input type="time" id="tOut"></div>
+      </div>
+      <small class="hint">Leeg laten = nu. Je kunt een tijd van vandaag invullen om achteraf in of uit te checken.</small>
       <div class="btns">
         <button class="go" id="btnIn"><span class="o">▶</span> Inchecken</button>
         <button class="stop" id="btnOut" style="display:none"><span class="o">■</span> Uitchecken</button>
@@ -175,24 +234,44 @@
       <input type="file" id="fileRestore" accept="application/json" style="display:none">
     </div>
     <p class="foot">Alles wordt lokaal in deze browser opgeslagen. Maak af en toe een back-up.</p>
-  </details>
-  <p class="foot" style="text-align:center;margin-top:30px">SQUARED-MEDIA.NL · eerste versie</p>
+    <div class="btns" style="align-items:center">
+      <span class="foot">Feest bekijken:</span>
+      <button class="small" data-party="50">€50</button>
+      <button class="small" data-party="100">€100</button>
+      <button class="small" data-party="250">€250</button>
+      <button class="small" data-party="750">€750</button>
+      <button class="small" data-party="1000">€1000</button>
+    </div>
+    </details>
+  <p class="foot" style="text-align:center;margin-top:30px">SQUARED-MEDIA.NL · <span id="whoami">eerste versie</span></p>
 </div>
 
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="banner" id="banner" role="status" aria-live="polite"></div>
+<script src="config.js"></script>
 <script>
 (() => {
   const KEY = 'urenlogger.v1';
   const $ = id => document.getElementById(id);
-  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const uid = () => {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    const b = crypto.getRandomValues(new Uint8Array(16)); b[6] = b[6] & 15 | 64; b[8] = b[8] & 63 | 128;
+    const h = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+    return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+  };
+  const CFG = window.URENLOGGER_CONFIG || {};
+  const CLOUD = !!(CFG.supabaseUrl && CFG.supabaseKey);   // met inloggen en database, anders alleen lokaal
 
   // ---------- state ----------
-  const defaults = { rate: 65, btw: 21, entries: [], costs: [], active: null };
-  let S = load();
+  const freshState = () => ({ rate: 65, btw: 21, entries: [], costs: [], active: null, celebrated: {} });
+  let S = CLOUD ? freshState() : load();
+  let ready = !CLOUD;          // in de cloud-modus pas na het ophalen van je gegevens
   function load() {
-    try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem(KEY)) || {}); }
-    catch { return { ...defaults, entries: [], costs: [] }; }
+    try { return Object.assign(freshState(), JSON.parse(localStorage.getItem(KEY)) || {}); }
+    catch { return freshState(); }
   }
   function save() {
+    if (CLOUD) return schedulePush();
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { alert('Opslaan in de browser is mislukt.'); }
   }
   let view = new Date(); view.setDate(1); view.setHours(0, 0, 0, 0);
@@ -214,19 +293,50 @@
   const costDate = c => new Date(c.date + 'T12:00:00');
 
   // ---------- check in / out ----------
+  // Tijd uit een tijdveld (vandaag) -> timestamp, of null als het veld leeg is
+  const fieldTime = id => {
+    const v = $(id).value; if (!v) return null;
+    const [h, m] = v.split(':').map(Number);
+    const d = new Date(); d.setHours(h, m, 0, 0); return d.getTime();
+  };
+  const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
+
+  function setStart(ts) {
+    if (ts > Date.now()) { alert('Die begintijd ligt in de toekomst.'); return false; }
+    if (ts < startOfToday()) { alert('Alleen een begintijd van vandaag kan.'); return false; }
+    if (S.active) S.active.start = ts;
+    else S.active = { start: ts, note: $('note').value.trim() };
+    save(); return true;
+  }
+  function endAt(end) {
+    if (!S.active) return false;
+    if (end > Date.now()) { alert('Die eindtijd ligt in de toekomst.'); return false; }
+    if (end < startOfToday()) { alert('Alleen een eindtijd van vandaag kan.'); return false; }
+    if (end - S.active.start < 1000) { alert('De eindtijd ligt voor je begintijd.'); return false; }
+    S.entries.push({ id: uid(), start: S.active.start, end, note: S.active.note || $('note').value.trim() });
+    S.active = null; $('note').value = ''; $('tIn').value = ''; $('tOut').value = '';
+    save(); return true;
+  }
+
   $('btnIn').onclick = () => {
     if (S.active) return;
-    S.active = { start: Date.now(), note: $('note').value.trim() };
-    save(); render();
+    const ts = fieldTime('tIn');
+    if (ts === null) { S.active = { start: Date.now(), note: $('note').value.trim() }; save(); }
+    else if (!setStart(ts)) return;
+    $('tOut').value = ''; render();
   };
   $('btnOut').onclick = () => {
     if (!S.active) return;
-    const end = Date.now();
-    if (end - S.active.start >= 1000) {
-      S.entries.push({ id: uid(), start: S.active.start, end, note: S.active.note || $('note').value.trim() });
-    }
-    S.active = null; $('note').value = '';
-    save(); render();
+    const ts = fieldTime('tOut');
+    if (ts === null && Date.now() - S.active.start < 1000) { S.active = null; $('note').value = ''; $('tIn').value = ''; save(); render(); return; }
+    endAt(ts === null ? Date.now() : ts); render();
+  };
+  // Begintijd aanpassen terwijl de timer loopt
+  $('tIn').onchange = () => {
+    if (!S.active) return;
+    const ts = fieldTime('tIn');
+    if (ts !== null) setStart(ts);
+    render();
   };
 
   // ---------- forms ----------
@@ -251,7 +361,7 @@
     const [type, id] = b.dataset.del.split(':');
     if (type === 'e') S.entries = S.entries.filter(x => x.id !== id);
     else S.costs = S.costs.filter(x => x.id !== id);
-    save(); render();
+    syncCelebrated(); save(); render();
   });
 
   // ---------- month nav ----------
@@ -266,7 +376,7 @@
     const v = prompt('Btw-percentage:', S.btw); if (v === null) return;
     const btw = parseFloat(String(v).replace(',', '.'));
     if (!(btw >= 0)) return alert('Ongeldig percentage.');
-    S.rate = rate; S.btw = btw; save(); render();
+    S.rate = rate; S.btw = btw; syncCelebrated(); save(); render();
   };
 
   // ---------- export ----------
@@ -301,10 +411,162 @@
       const d = JSON.parse(await f.text());
       if (!Array.isArray(d.entries) || !Array.isArray(d.costs)) throw 0;
       if (!confirm('Dit vervangt je huidige gegevens. Doorgaan?')) return;
-      S = Object.assign({}, defaults, d); save(); render();
+      S = Object.assign(freshState(), d);
+      if (CLOUD) { const isId = x => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x.id); S.entries.forEach(x => { if (!isId(x)) x.id = uid(); }); S.costs.forEach(x => { if (!isId(x)) x.id = uid(); }); }
+      syncCelebrated(); save(); render();
     } catch { alert('Dit is geen geldig back-upbestand.'); }
     e.target.value = '';
   };
+
+
+  // ---------- de mascotte zegt elke dag iets anders ----------
+  const SAYINGS = [
+    // grapjes
+    'Wat doet een vierkant als hij moe is? Even afronden.',
+    'Ik ben niet koppig, ik ben gewoon van beton.',
+    'Light mode trekt bugs aan. Weet ik uit ervaring.',
+    'Er zijn 10 soorten mensen: zij die binair snappen en zij die dat niet doen.',
+    'Waarom is een rechter nooit moe? Hij heeft altijd zitting.',
+    'Wat zei de ene muur tegen de andere? Zie je op de hoek!',
+    'Ik heb een vierkant hoofd. Dat is geen pech, dat is branding.',
+    'Buiten de doos denken? Ik ben de doos.',
+    'Mijn sjaal is oranje. Mijn planning ook: net niet rood.',
+    'Ik heb dunne beentjes, maar een strakke agenda.',
+    'Tijd is geld, zeggen ze. Dan ben jij nu aan het verdienen.',
+    'Waarom houdt een klok van overwerk? Hij draait er zijn hand niet voor om.',
+    // sterkte
+    'Je doet het goed. Echt waar, ik heb het uitgerekend.',
+    'Sterkte vandaag! Eén taak tegelijk is genoeg.',
+    'Neem straks even pauze. Ook beton heeft rust nodig.',
+    'Je hoeft vandaag niet perfect te zijn, alleen aanwezig.',
+    'Moeilijke dag? Ik tel gewoon rustig mee.',
+    'Even rechtop zitten en schouders laten zakken.',
+    'Eén ding afmaken is vaak genoeg voor een goede dag.',
+    'Goed bezig! Jouw werk is belangrijk.',
+    'Vandaag wordt een goede dag. Dat besluit ik hierbij.',
+    'Drink even wat water. Ik doe het niet, maar jij wel.',
+    'Ga vandaag op tijd naar huis. Dat mag van mij.',
+    'Kleine stappen tellen ook. Zeker per uur.',
+    // algemeen
+    'Hoi! Ik ben je uren-maatje.',
+    'Ik hou de tijd in de gaten, jij het werk.',
+    'Elke minuut telt. Letterlijk, ik tel ze.',
+    'Een uur duurt precies 60 minuten. Ik hou het bij.',
+    'Tip: noteer je uren elke dag, dan hoef je ze nooit te zoeken.',
+    'Heb je al geluncht? Ik heb nooit honger, maar jij vast wel.',
+    'Vandaag is een mooie dag om uren te tellen.',
+    'Vergeten in te checken? Vul gewoon je begintijd in.',
+    'Zin in koffie? Ik zou zeggen: doen.',
+    'Ik zit hier gewoon lekker te wachten tot jij begint.',
+    'Weetje: een vierkant heeft vier hoeken en nul excuses.',
+    'Fijne dag! Ik zwaai alvast.'
+  ];
+  let holdBubbleUntil = 0;
+  const dayNumber = () => { const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); };
+  const sayingOfTheDay = () => SAYINGS[dayNumber() % SAYINGS.length];
+  function updateSaying() { if (Date.now() < holdBubbleUntil) return; const t = sayingOfTheDay(); if ($('bubble').textContent !== t) $('bubble').textContent = t; }
+
+
+  // ---------- feest bij ronde bedragen ----------
+  const eur0 = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const tierOf = n => n % 1000 === 0 ? 'mega' : n % 250 === 0 ? 'big' : n % 100 === 0 ? 'medium' : 'small';
+  const PARTY_TEXT = {
+    small: ['Lekker bezig!', 'Ping! Weer een stapje.', 'Kassa!', 'Ik tel door!'],
+    medium: ['Dat is een rond bedrag.', 'Boem! Vierkant gedaan.', 'Hoera, weer een mijlpaal!', 'Ik geef een rondje... in gedachten.'],
+    big: ['Dit mag gevierd worden!', 'Wauw, wat een maand!', 'Zet de confetti maar aan!'],
+    mega: ['Absoluut een topmaand!', 'Dit is een heus feest!']
+  };
+  const SPECIAL = { 250: 'Een kwart naar de 1000!', 500: 'Halverwege de 1000!', 750: 'Driekwart naar de 1000!', 1000: 'Duizend! Dat verdient een feestje.' };
+
+  const cv = $('confetti'), cx = cv.getContext('2d');
+  let parts = [], raf = 0;
+  const COLORS = ['#D34C1F', '#182013', '#B8C1A6', '#BAB3A9', '#ffffff', '#2E3339'];
+  function sizeCanvas() { const r = window.devicePixelRatio || 1; cv.width = innerWidth * r; cv.height = innerHeight * r; cx.setTransform(r, 0, 0, r, 0, 0); }
+  window.addEventListener('resize', sizeCanvas); sizeCanvas();
+
+  function addParts(n, make) {
+    for (let i = 0; i < n; i++) parts.push(Object.assign({
+      rot: rnd(0, 6.28), vr: rnd(-.3, .3), size: rnd(8, 18), color: pick(COLORS), life: 0, max: rnd(120, 210),
+      shape: Math.random() < .12 ? 'euro' : Math.random() < .75 ? 'sq' : 'bar'
+    }, make(i)));
+    if (!raf) raf = requestAnimationFrame(frame);
+  }
+  const burst = (x, y, n, power = 1) => addParts(n, () => { const a = rnd(0, 6.28), v = rnd(5, 15) * power; return { x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 4 * power }; });
+  const cannon = (fromLeft, n) => addParts(n, () => { const a = (fromLeft ? rnd(-80, -45) : rnd(-135, -100)) * Math.PI / 180, v = rnd(14, 26); return { x: fromLeft ? -10 : innerWidth + 10, y: innerHeight + 10, vx: Math.cos(a) * v, vy: Math.sin(a) * v, max: rnd(160, 260) }; });
+  const rain = n => addParts(n, () => ({ x: rnd(0, innerWidth), y: rnd(-60, -10), vx: rnd(-1.5, 1.5), vy: rnd(2, 5), max: rnd(180, 300) }));
+
+  function frame() {
+    cx.clearRect(0, 0, innerWidth, innerHeight);
+    parts = parts.filter(p => p.life < p.max && p.y < innerHeight + 60);
+    for (const p of parts) {
+      p.vy += .38; p.vx *= .985; p.vy *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
+      cx.save(); cx.globalAlpha = Math.min(1, (p.max - p.life) / 30);
+      cx.translate(p.x, p.y); cx.rotate(p.rot); cx.scale(1, Math.cos(p.life * .15 + p.rot)); cx.fillStyle = p.color;
+      if (p.shape === 'sq') cx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      else if (p.shape === 'bar') cx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      else { cx.font = `800 ${p.size * 1.7}px "Schibsted Grotesk",sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillStyle = '#D34C1F'; cx.fillText('€', 0, 0); }
+      cx.restore();
+    }
+    raf = parts.length ? requestAnimationFrame(frame) : (cx.clearRect(0, 0, innerWidth, innerHeight), 0);
+  }
+
+  function mascotSpot() {
+    const r = document.querySelector('.mascotwrap img').getBoundingClientRect();
+    const ok = r.bottom > 0 && r.top < innerHeight;
+    return ok ? { x: r.left + r.width / 2, y: r.top + r.height * .3 } : { x: innerWidth / 2, y: innerHeight * .35 };
+  }
+  const later = (fn, ms) => setTimeout(fn, ms);
+  function confetti(tier) {
+    const m = mascotSpot();
+    if (tier === 'small') { burst(m.x, m.y, 60); }
+    else if (tier === 'medium') {
+      if (Math.random() < .5) { cannon(true, 70); cannon(false, 70); } else { burst(m.x, m.y, 90, 1.2); later(() => burst(innerWidth / 2, innerHeight * .3, 80, 1.2), 350); }
+    } else if (tier === 'big') {
+      cannon(true, 90); cannon(false, 90); for (let i = 1; i <= 3; i++) later(() => rain(45), i * 600);
+    } else {
+      for (let i = 0; i < 3; i++) later(() => { cannon(true, 90); cannon(false, 90); }, i * 700);
+      for (let i = 0; i < 7; i++) later(() => rain(50), 400 + i * 500);
+      later(() => burst(innerWidth / 2, innerHeight * .35, 140, 1.5), 1800);
+    }
+  }
+
+  let bannerTimer = 0;
+  function party(n) {
+    const tier = tierOf(n), msg = SPECIAL[n] || pick(PARTY_TEXT[tier]);
+    const b = $('banner');
+    b.className = 'banner ' + tier;
+    b.innerHTML = `<div class="lbl">Deze maand verdiend</div><div class="amt"><span class="o">€</span> ${n.toLocaleString('nl-NL')}</div><div class="msg">${esc(msg)}</div>`;
+    requestAnimationFrame(() => b.classList.add('show'));
+    clearTimeout(bannerTimer); bannerTimer = later(() => b.classList.remove('show'), tier === 'mega' ? 8000 : tier === 'big' ? 6500 : 5000);
+    $('bubble').textContent = `${eur0.format(n)}! ${msg}`; holdBubbleUntil = Date.now() + 9000;
+    const img = document.querySelector('.mascotwrap img'); img.classList.remove('party'); void img.offsetWidth; img.classList.add('party');
+    later(() => img.classList.remove('party'), 2300);
+    try { navigator.vibrate && navigator.vibrate(tier === 'small' ? [40] : [60, 40, 60, 40, 120]); } catch {}
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) confetti(tier);
+  }
+  document.querySelectorAll('[data-party]').forEach(b => b.onclick = () => party(Number(b.dataset.party)));
+
+  // Verdiend deze kalendermaand (live), los van de maand die je bekijkt
+  const ymOf = d => d.getFullYear() * 12 + d.getMonth();
+  function liveMonthEarn() {
+    const k = ymOf(new Date());
+    let ms = S.entries.filter(x => ymOf(new Date(x.start)) === k).reduce((a, x) => a + (x.end - x.start), 0);
+    if (S.active && ymOf(new Date(S.active.start)) === k) ms += Date.now() - S.active.start;
+    return earn(ms);
+  }
+  const monthKey = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
+  const levelNow = () => Math.floor(liveMonthEarn() / 50 + 1e-9) * 50;
+  // zet de teller stil op het huidige niveau (bij verwijderen, tariefwijziging of herstellen)
+  function syncCelebrated() { S.celebrated = S.celebrated || {}; S.celebrated[monthKey()] = levelNow(); }
+  function checkMilestone() {
+    if (!ready) return;
+    S.celebrated = S.celebrated || {};
+    const key = monthKey(), lvl = levelNow();
+    if (S.celebrated[key] === undefined) { S.celebrated[key] = lvl; save(); return; }   // eerste keer: geen feest voor oud werk
+    if (lvl > S.celebrated[key]) { S.celebrated[key] = lvl; save(); party(lvl); }
+  }
 
   // ---------- rendering ----------
   function monthTotals() {
@@ -317,6 +579,8 @@
 
   // lichte tick: alleen de live getallen
   function tick() {
+    updateSaying();
+    checkMilestone();
     const act = S.active, now = Date.now();
     if (act) {
       const ms = now - act.start;
@@ -336,10 +600,12 @@
     const act = S.active;
     $('rateLabel').textContent = money(S.rate).replace(',00','');
     $('hero').classList.toggle('active', !!act);
+    $('tOut').disabled = !act;
+    if (act && document.activeElement !== $('tIn')) { const d = new Date(act.start); $('tIn').value = pad(d.getHours()) + ':' + pad(d.getMinutes()); }
     $('btnIn').style.display = act ? 'none' : '';
     $('btnOut').style.display = act ? '' : 'none';
     $('statusTxt').textContent = act ? 'Ingecheckt' : 'Uitgecheckt';
-    $('bubble').textContent = act ? 'Aan het werk. Ik tel mee!' : 'Klaar voor een nieuwe dag?';
+    updateSaying();
     if (act) {
       $('liveSub').textContent = `Sinds ${fmtTime(act.start)} · ${money(S.rate)} per uur`;
       if (document.activeElement !== $('note')) $('note').value = act.note || '';
@@ -363,16 +629,190 @@
     tick();
   }
 
+
+  // ================= inloggen + database (alleen als config.js is ingevuld) =================
+  let sb = null, user = null, remote = null, pushTimer = 0, pushing = false, again = false, retryTimer = 0, syncHide = 0, started = false;
+  const REMOTE_EMPTY = () => ({ entries: new Map(), costs: new Map(), settings: '' });
+  const money2 = n => Math.round(Number(n) * 100) / 100;
+  const rowEntry = e => ({ id: e.id, user_id: user.id, started_at: new Date(e.start).toISOString(), ended_at: new Date(e.end).toISOString(), note: e.note || '' });
+  const rowCost = c => ({ id: c.id, user_id: user.id, cost_date: c.date, description: c.desc, amount: money2(c.amount) });
+  const rowSettings = () => ({ user_id: user.id, rate: S.rate, btw: S.btw, active: S.active || null, celebrated: S.celebrated || {} });
+  const fromEntry = r => ({ id: r.id, start: Date.parse(r.started_at), end: Date.parse(r.ended_at), note: r.note || '' });
+  const fromCost = r => ({ id: r.id, date: r.cost_date, desc: r.description, amount: Number(r.amount) });
+
+  const syncMsg = (txt, keep) => {
+    const el = $('syncState'); el.textContent = txt; el.classList.add('show');
+    clearTimeout(syncHide); if (!keep) syncHide = setTimeout(() => el.classList.remove('show'), 1600);
+  };
+  const dirty = () => !!pushTimer || pushing || again || !!retryTimer;
+  window.addEventListener('beforeunload', e => { if (CLOUD && dirty()) { e.preventDefault(); e.returnValue = ''; } });
+
+  function schedulePush() {
+    if (!ready || !user) return;
+    clearTimeout(pushTimer); pushTimer = setTimeout(() => { pushTimer = 0; push(); }, 400);
+  }
+  async function push() {
+    if (!ready || !user) return;
+    if (pushing) { again = true; return; }
+    pushing = true; clearTimeout(retryTimer); retryTimer = 0; syncMsg('Opslaan…', true);
+    try {
+      const eRows = S.entries.map(rowEntry), cRows = S.costs.map(rowCost), st = rowSettings();
+      const eUp = eRows.filter(r => remote.entries.get(r.id) !== JSON.stringify(r));
+      const cUp = cRows.filter(r => remote.costs.get(r.id) !== JSON.stringify(r));
+      const eDel = [...remote.entries.keys()].filter(id => !eRows.some(r => r.id === id));
+      const cDel = [...remote.costs.keys()].filter(id => !cRows.some(r => r.id === id));
+      const stUp = remote.settings !== JSON.stringify(st);
+      const ck = r => { if (r.error) throw r.error; };
+      if (stUp) ck(await sb.from('user_settings').upsert(st, { onConflict: 'user_id' }));
+      if (eUp.length) ck(await sb.from('entries').upsert(eUp, { onConflict: 'id' }));
+      if (cUp.length) ck(await sb.from('costs').upsert(cUp, { onConflict: 'id' }));
+      if (eDel.length) ck(await sb.from('entries').delete().in('id', eDel));
+      if (cDel.length) ck(await sb.from('costs').delete().in('id', cDel));
+      eUp.forEach(r => remote.entries.set(r.id, JSON.stringify(r))); eDel.forEach(id => remote.entries.delete(id));
+      cUp.forEach(r => remote.costs.set(r.id, JSON.stringify(r))); cDel.forEach(id => remote.costs.delete(id));
+      remote.settings = JSON.stringify(st);
+      syncMsg('Opgeslagen ✓');
+    } catch (err) {
+      console.error(err); syncMsg('Niet opgeslagen. Ik probeer het opnieuw…', true);
+      retryTimer = setTimeout(() => { retryTimer = 0; push(); }, 8000);
+    } finally {
+      pushing = false; if (again) { again = false; push(); }
+    }
+  }
+  async function fetchAll(table, order) {
+    const out = []; for (let from = 0; ; from += 1000) {
+      const r = await sb.from(table).select('*').order(order).range(from, from + 999);
+      if (r.error) throw r.error; out.push(...r.data); if (r.data.length < 1000) return out;
+    }
+  }
+  // Haalt alles op en maakt dit de nieuwe stand. Geeft terug of er al instellingen bestonden.
+  async function pullAll() {
+    const [e, c, st] = await Promise.all([fetchAll('entries', 'started_at'), fetchAll('costs', 'cost_date'), sb.from('user_settings').select('*').maybeSingle()]);
+    if (st.error) throw st.error;
+    const base = freshState();
+    S = Object.assign(base, st.data ? { rate: Number(st.data.rate), btw: Number(st.data.btw), active: st.data.active || null, celebrated: st.data.celebrated || {} } : {},
+      { entries: e.map(fromEntry), costs: c.map(fromCost) });
+    remote = REMOTE_EMPTY();
+    S.entries.forEach(x => remote.entries.set(x.id, JSON.stringify(rowEntry(x))));
+    S.costs.forEach(x => remote.costs.set(x.id, JSON.stringify(rowCost(x))));
+    if (st.data) remote.settings = JSON.stringify(rowSettings());
+    return !!st.data;
+  }
+
+  // ---- schermen ----
+  const authMsg = (txt, ok) => { const m = $('authMsg'); m.hidden = !txt; m.textContent = txt || ''; m.classList.toggle('ok', !!ok); };
+  function showAuth(mode) {   // 'login' | 'newpass'
+    $('app').hidden = true; $('auth').hidden = false;
+    $('formLogin').hidden = mode !== 'login'; $('btnForgot').hidden = mode !== 'login'; $('formNewPass').hidden = mode !== 'newpass';
+    $('authTitle').textContent = mode === 'login' ? 'Inloggen' : 'Kies een wachtwoord';
+  }
+  function showApp() {
+    $('auth').hidden = true; $('app').hidden = false; $('btnLogout').hidden = false;
+    $('whoami').textContent = user.email;
+  }
+  const niceError = err => {
+    const m = String(err && err.message || err || '');
+    if (/invalid login/i.test(m)) return 'E-mailadres of wachtwoord klopt niet.';
+    if (/rate limit|too many/i.test(m)) return 'Even geduld: te veel pogingen. Probeer het over een paar minuten opnieuw.';
+    if (/network|fetch/i.test(m)) return 'Geen verbinding. Controleer je internet en probeer opnieuw.';
+    return 'Er ging iets mis: ' + m;
+  };
+  function loadScript(src) {
+    return new Promise((ok, fail) => { const t = document.createElement('script'); t.src = src; t.onload = ok; t.onerror = () => fail(new Error('network')); document.head.appendChild(t); });
+  }
+
+  let needPassword = /type=(invite|recovery)/.test(location.hash + location.search);
+  let handling = 0;
+  async function handleSession(session) {
+    if (!session) { user = null; ready = false; showAuth('login'); return; }
+    if (needPassword) { user = session.user; showAuth('newpass'); return; }
+    if (user && user.id === session.user.id && ready) return;   // alleen een vernieuwd token
+    const token = ++handling; user = session.user; ready = false;
+    try {
+      const had = await pullAll(); if (token !== handling) return;
+      ready = true;
+      await offerLocalImport();
+      showApp(); render(); startOnce();
+      if (!had) { alert('Welkom! Stel eerst je uurtarief en btw-percentage in.'); $('btnSettings').click(); schedulePush(); }
+    } catch (err) {
+      console.error(err); showAuth('login'); authMsg('Je gegevens konden niet worden opgehaald. ' + niceError(err));
+    }
+  }
+  // Uren die vóór het inloggen lokaal zijn bijgehouden, eenmalig aanbieden om te importeren
+  async function offerLocalImport() {
+    const flag = 'urenlogger.import.' + user.id;
+    try {
+      if (localStorage.getItem(flag)) return;
+      const raw = localStorage.getItem(KEY); if (!raw) return;
+      const old = JSON.parse(raw), oe = (old.entries || []).filter(x => x.end > x.start), oc = old.costs || [];
+      if (!oe.length && !oc.length) return;
+      localStorage.setItem(flag, '1');
+      if (S.entries.length || S.costs.length) return;   // account is al in gebruik: niet mengen
+      if (!confirm(`Op dit apparaat staan nog ${oe.length} gelogde uren en ${oc.length} kosten van vóór het inloggen. Importeren in je account?`)) return;
+      S.entries = oe.map(x => ({ id: uid(), start: x.start, end: x.end, note: x.note || '' }));
+      S.costs = oc.map(x => ({ id: uid(), date: x.date, desc: x.desc, amount: Number(x.amount) }));
+      if (old.rate > 0) S.rate = old.rate; if (old.btw >= 0) S.btw = old.btw;
+      syncCelebrated(); await push();
+    } catch (err) { console.error(err); }
+  }
+  function startOnce() {
+    if (started) return; started = true;
+    setInterval(tick, 250);
+    // andere apparaten: ververs als je terugkomt in dit tabblad
+    const refresh = async () => {
+      if (!user || !ready || dirty() || document.hidden) return;
+      try { await pullAll(); render(); } catch (err) { console.error(err); }
+    };
+    document.addEventListener('visibilitychange', refresh); window.addEventListener('online', () => { if (retryTimer) { clearTimeout(retryTimer); retryTimer = 0; push(); } else refresh(); });
+  }
+
+  async function cloudInit() {
+    $('app').hidden = true; showAuth('login');
+    try { await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'); }
+    catch { authMsg('De inlogmodule kon niet worden geladen. Controleer je verbinding en ververs de pagina.'); return; }
+    sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    sb.auth.onAuthStateChange((evt, session) => {
+      if (evt === 'PASSWORD_RECOVERY') needPassword = true;
+      setTimeout(() => handleSession(session), 0);   // niet binnen de callback wachten op Supabase
+    });
+    $('formLogin').onsubmit = async e => {
+      e.preventDefault(); authMsg(''); $('btnLogin').disabled = true;
+      const r = await sb.auth.signInWithPassword({ email: $('aEmail').value.trim(), password: $('aPass').value });
+      $('btnLogin').disabled = false; if (r.error) authMsg(niceError(r.error)); else $('aPass').value = '';
+    };
+    $('btnForgot').onclick = async () => {
+      const email = $('aEmail').value.trim(); if (!email) return authMsg('Vul eerst je e-mailadres in.');
+      const r = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+      authMsg(r.error ? niceError(r.error) : 'Als dit adres bekend is, is er een e-mail gestuurd met een link om een nieuw wachtwoord te kiezen.', !r.error);
+    };
+    $('formNewPass').onsubmit = async e => {
+      e.preventDefault(); authMsg('');
+      const a = $('nPass').value; if (a.length < 8) return authMsg('Kies minimaal 8 tekens.');
+      if (a !== $('nPass2').value) return authMsg('De twee wachtwoorden zijn niet gelijk.');
+      const r = await sb.auth.updateUser({ password: a });
+      if (r.error) return authMsg(niceError(r.error));
+      needPassword = false; history.replaceState(null, '', location.pathname);
+      const { data } = await sb.auth.getSession(); handleSession(data.session);
+    };
+    $('btnLogout').onclick = async () => {
+      if (dirty()) { clearTimeout(pushTimer); pushTimer = 0; await push(); }
+      await sb.auth.signOut(); location.reload();
+    };
+  }
+
   // defaults voor datumvelden
   const today = ymd(new Date());
   $('hDate').value = today; $('cDate').value = today;
   $('hFrom').value = '09:00'; $('hTo').value = '17:00';
 
-  render();
-  setInterval(tick, 250);
   try { if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js'); } catch {}
-  // sync tussen tabs
-  window.addEventListener('storage', e => { if (e.key === KEY) { S = load(); render(); } });
+  if (CLOUD) cloudInit();
+  else {
+    render();
+    setInterval(tick, 250);
+    // sync tussen tabs
+    window.addEventListener('storage', e => { if (e.key === KEY) { S = load(); render(); } });
+  }
 })();
 </script>
 </body>
