@@ -46,6 +46,20 @@
   @media(max-width:700px){.hero{grid-template-columns:1fr;text-align:center;padding:22px}.mascotwrap{height:230px}.btns{justify-content:center}}
   .status{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--ink);color:var(--sage-100);font-size:.72rem}
   .hero.active .status{background:var(--orange);color:#fff}
+  .status.proj{background:transparent;color:var(--ink);border:2px solid var(--ink);padding:2px 12px;max-width:100%;overflow-wrap:anywhere}
+  .hero.active .status.proj{background:transparent;color:var(--ink)}
+  h2 .status.proj{font-size:.68rem;vertical-align:middle;margin-left:8px;letter-spacing:.08em}
+  .stline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  @media(max-width:700px){.stline{justify-content:center}}
+
+  /* projecten */
+  .projects{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-8px 0 22px}
+  .projects .lbl{font-family:"DM Mono",ui-monospace,monospace;font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:.7rem;color:var(--ink-soft);margin-right:4px}
+  .projects button{padding:8px 18px}
+  .projects button[aria-pressed="true"]{background:var(--ink);color:var(--sage-100)}
+  .projects button.add{border-style:dashed}
+  .projects button .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--orange);margin-right:8px;vertical-align:1px}
+  .rates{margin:8px 2px 0}
   .earn{font-size:clamp(3rem,10vw,5.6rem);font-weight:800;letter-spacing:-.045em;line-height:.95;margin:14px 0 4px;font-variant-numeric:tabular-nums}
   .clock{font-family:"DM Mono",monospace;font-weight:500;font-size:1.5rem;letter-spacing:.08em;font-variant-numeric:tabular-nums}
   .hero small{color:var(--ink-soft)}
@@ -147,9 +161,11 @@
   <header>
     <img class="logo" src="assets/logo-squared.png" alt="Squared Media">
     <span class="sp"></span>
-    <button class="small" id="btnSettings" title="Instellingen">Tarief: <span id="rateLabel"></span>/u</button>
+    <button class="small" id="btnSettings" title="Naam, tarief en btw van dit project aanpassen">Project aanpassen · <span id="rateLabel"></span>/u</button>
     <button class="small" id="btnLogout" hidden>Uitloggen</button>
   </header>
+
+  <nav class="projects" id="projects" aria-label="Projecten"></nav>
 
   <!-- HERO: in/uitchecken -->
   <section class="card hero" id="hero">
@@ -159,7 +175,7 @@
     </div>
 
     <div>
-      <span class="status" id="statusTxt">Uitgecheckt</span>
+      <div class="stline"><span class="status" id="statusTxt">Uitgecheckt</span><span class="status proj" id="heroProj"></span></div>
       <p class="earn" id="liveEarn"><span class="o">€</span> 0,00</p>
       <div class="clock" id="liveClock">0:00:00</div>
       <small id="liveSub">Klaar om te beginnen? Check in!</small>
@@ -181,7 +197,7 @@
   <!-- MAAND -->
   <div class="monthbar">
     <button class="small" id="prev" aria-label="Vorige maand">◀</button>
-    <h2 id="monthTitle"></h2>
+    <h2><span id="monthTitle"></span><span class="status proj pj"></span></h2>
     <button class="small" id="next" aria-label="Volgende maand">▶</button>
   </div>
   <section class="stats">
@@ -191,11 +207,12 @@
     <div class="stat total"><span>Totaal ex btw</span><b id="mTotal">€ 0,00</b></div>
   </section>
   <p class="foot" style="margin:12px 2px 0" id="btwLine"></p>
+  <p class="foot rates" id="allProjects"></p>
 
   <!-- FORMS -->
   <div class="grid two" style="margin-top:22px">
     <section class="card">
-      <h2>Uren handmatig toevoegen</h2>
+      <h2>Uren handmatig toevoegen<span class="status proj pj"></span></h2>
       <form id="formHours">
         <div class="row"><div><label for="hDate">Datum</label><input type="date" id="hDate" required></div>
           <div><label for="hNote">Omschrijving</label><input id="hNote" placeholder="Optioneel"></div></div>
@@ -205,7 +222,7 @@
       </form>
     </section>
     <section class="card">
-      <h2>Extra kosten</h2>
+      <h2>Extra kosten toevoegen<span class="status proj pj"></span></h2>
       <form id="formCost">
         <div class="row"><div><label for="cDate">Datum</label><input type="date" id="cDate" required></div>
           <div><label for="cAmount">Bedrag ex btw (€)</label><input type="number" id="cAmount" step="0.01" min="0.01" inputmode="decimal" required></div></div>
@@ -217,22 +234,23 @@
 
   <!-- LIJSTEN -->
   <section class="card" style="margin-top:22px">
-    <h2>Gelogde uren</h2>
+    <h2>Gelogde uren<span class="status proj pj"></span></h2>
     <div id="listHours"></div>
   </section>
   <section class="card" style="margin-top:22px">
-    <h2>Extra kosten</h2>
+    <h2>Extra kosten<span class="status proj pj"></span></h2>
     <div id="listCosts"></div>
   </section>
 
   <details>
     <summary>Export & back-up</summary>
     <div class="btns">
-      <button class="small" id="btnCsv">Maand als CSV (factuurregels)</button>
+      <button class="small" id="btnCsv">Maand als CSV (dit project)</button>
       <button class="small" id="btnBackup">Back-up (JSON)</button>
       <button class="small" id="btnRestore">Back-up terugzetten</button>
       <input type="file" id="fileRestore" accept="application/json" style="display:none">
     </div>
+    <div class="btns"><button class="small" id="btnDelProject">Dit project verwijderen</button></div>
     <p class="foot">Alles wordt lokaal in deze browser opgeslagen. Maak af en toe een back-up.</p>
     <div class="btns" style="align-items:center">
       <span class="foot">Feest bekijken:</span>
@@ -263,13 +281,35 @@
   const CLOUD = !!(CFG.supabaseUrl && CFG.supabaseKey);   // met inloggen en database, anders alleen lokaal
 
   // ---------- state ----------
-  const freshState = () => ({ rate: 65, btw: 21, entries: [], costs: [], active: null, celebrated: {} });
+  // rate en btw staan alleen nog in de state voor oude back-ups en de eerste migratie; per project staan ze in S.projects
+  const freshState = () => ({ rate: 65, btw: 21, projects: [], entries: [], costs: [], active: null, celebrated: {} });
+  const PKEY = 'urenlogger.project';
+  let curId = null;
+  try { curId = localStorage.getItem(PKEY); } catch {}
   let S = CLOUD ? freshState() : load();
   let ready = !CLOUD;          // in de cloud-modus pas na het ophalen van je gegevens
   function load() {
     try { return Object.assign(freshState(), JSON.parse(localStorage.getItem(KEY)) || {}); }
     catch { return freshState(); }
   }
+  // Zorgt dat er minstens één project is en dat alle uren, kosten en de klok bij een project horen.
+  // Geeft true als er iets is aangepast (dan moet het opnieuw worden opgeslagen).
+  function ensureProjects() {
+    let changed = false;
+    if (!Array.isArray(S.projects)) S.projects = [];
+    if (!S.projects.length) { S.projects.push({ id: uid(), name: 'Rechtspraak', rate: S.rate > 0 ? Number(S.rate) : 65, btw: S.btw >= 0 ? Number(S.btw) : 21 }); changed = true; }
+    const first = S.projects[0].id;
+    S.entries.forEach(x => { if (!x.projectId) { x.projectId = first; changed = true; } });
+    S.costs.forEach(x => { if (!x.projectId) { x.projectId = first; changed = true; } });
+    if (S.active && !S.active.projectId) { S.active.projectId = first; changed = true; }
+    if (!S.projects.some(p => p.id === curId)) setCurrent((S.active && S.active.projectId) || first);
+    return changed;
+  }
+  const proj = id => S.projects.find(p => p.id === id);
+  const NO_PROJECT = { id: '', name: '', rate: 0, btw: 0 };
+  const cur = () => proj(curId) || S.projects[0] || NO_PROJECT;
+  function setCurrent(id) { curId = id; try { localStorage.setItem(PKEY, id); } catch {} }
+  if (!CLOUD && ensureProjects()) save();
   function save() {
     if (CLOUD) return schedulePush();
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { alert('Opslaan in de browser is mislukt.'); }
@@ -281,7 +321,8 @@
   const money = n => eur.format(n);
   const moneyBig = n => money(n).replace('€','<span class="o">€</span>');
   const pad = n => String(n).padStart(2, '0');
-  const earn = ms => ms / 3600000 * S.rate;
+  const earn = (ms, p = cur()) => ms / 3600000 * p.rate;
+  const slug = t => String(t || 'project').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'project';
   const hms = ms => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 3600)}:${pad(Math.floor(s % 3600 / 60))}:${pad(s % 60)}`; };
   const hm = ms => { const m = Math.round(ms / 60000); return `${Math.floor(m / 60)}u ${pad(m % 60)}m`; };
   const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -305,7 +346,7 @@
     if (ts > Date.now()) { alert('Die begintijd ligt in de toekomst.'); return false; }
     if (ts < startOfToday()) { alert('Alleen een begintijd van vandaag kan.'); return false; }
     if (S.active) S.active.start = ts;
-    else S.active = { start: ts, note: $('note').value.trim() };
+    else S.active = { start: ts, note: $('note').value.trim(), projectId: curId };
     save(); return true;
   }
   function endAt(end) {
@@ -313,7 +354,7 @@
     if (end > Date.now()) { alert('Die eindtijd ligt in de toekomst.'); return false; }
     if (end < startOfToday()) { alert('Alleen een eindtijd van vandaag kan.'); return false; }
     if (end - S.active.start < 1000) { alert('De eindtijd ligt voor je begintijd.'); return false; }
-    S.entries.push({ id: uid(), start: S.active.start, end, note: S.active.note || $('note').value.trim() });
+    S.entries.push({ id: uid(), projectId: S.active.projectId, start: S.active.start, end, note: S.active.note || $('note').value.trim() });
     S.active = null; $('note').value = ''; $('tIn').value = ''; $('tOut').value = '';
     save(); return true;
   }
@@ -321,7 +362,7 @@
   $('btnIn').onclick = () => {
     if (S.active) return;
     const ts = fieldTime('tIn');
-    if (ts === null) { S.active = { start: Date.now(), note: $('note').value.trim() }; save(); }
+    if (ts === null) { S.active = { start: Date.now(), note: $('note').value.trim(), projectId: curId }; save(); }
     else if (!setStart(ts)) return;
     $('tOut').value = ''; render();
   };
@@ -345,14 +386,14 @@
     const start = new Date(`${$('hDate').value}T${$('hFrom').value}`).getTime();
     const end = new Date(`${$('hDate').value}T${$('hTo').value}`).getTime();
     if (!(end > start)) return alert('"Tot" moet later zijn dan "Van".');
-    S.entries.push({ id: uid(), start, end, note: $('hNote').value.trim() });
+    S.entries.push({ id: uid(), projectId: curId, start, end, note: $('hNote').value.trim() });
     save(); $('hNote').value = ''; render();
   };
   $('formCost').onsubmit = e => {
     e.preventDefault();
     const amount = parseFloat($('cAmount').value);
     if (!(amount > 0)) return;
-    S.costs.push({ id: uid(), date: $('cDate').value, desc: $('cDesc').value.trim(), amount });
+    S.costs.push({ id: uid(), projectId: curId, date: $('cDate').value, desc: $('cDesc').value.trim(), amount });
     save(); $('cDesc').value = ''; $('cAmount').value = ''; render();
   };
   document.addEventListener('click', e => {
@@ -368,15 +409,46 @@
   $('prev').onclick = () => { view.setMonth(view.getMonth() - 1); render(); };
   $('next').onclick = () => { view.setMonth(view.getMonth() + 1); render(); };
 
-  // ---------- settings ----------
+  // ---------- projecten ----------
+  const askNumber = (label, def) => {
+    const r = prompt(label, def); if (r === null) return null;
+    const n = parseFloat(String(r).replace(',', '.'));
+    return Number.isFinite(n) ? n : NaN;
+  };
   $('btnSettings').onclick = () => {
-    const r = prompt('Uurtarief ex btw (€):', S.rate); if (r === null) return;
-    const rate = parseFloat(String(r).replace(',', '.'));
+    const p = cur(); if (!p.id) return;
+    const name = prompt('Naam van het project:', p.name); if (name === null) return;
+    if (!name.trim()) return alert('Geef het project een naam.');
+    const rate = askNumber('Uurtarief ex btw (€):', p.rate); if (rate === null) return;
     if (!(rate > 0)) return alert('Ongeldig tarief.');
-    const v = prompt('Btw-percentage:', S.btw); if (v === null) return;
-    const btw = parseFloat(String(v).replace(',', '.'));
+    const btw = askNumber('Btw-percentage:', p.btw); if (btw === null) return;
     if (!(btw >= 0)) return alert('Ongeldig percentage.');
-    S.rate = rate; S.btw = btw; syncCelebrated(); save(); render();
+    p.name = name.trim(); p.rate = rate; p.btw = btw; syncCelebrated(); save(); render();
+  };
+  function addProject() {
+    const name = prompt('Naam van het nieuwe project (bijvoorbeeld de klant):'); if (name === null) return;
+    if (!name.trim()) return alert('Geef het project een naam.');
+    const rate = askNumber('Uurtarief ex btw (€):', 65); if (rate === null) return;
+    if (!(rate > 0)) return alert('Ongeldig tarief.');
+    const btw = askNumber('Btw-percentage:', 21); if (btw === null) return;
+    if (!(btw >= 0)) return alert('Ongeldig percentage.');
+    const p = { id: uid(), name: name.trim(), rate, btw };
+    S.projects.push(p); setCurrent(p.id); save(); render();
+  }
+  $('projects').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'btnAddProject') return addProject();
+    if (b.dataset.proj && b.dataset.proj !== curId) { setCurrent(b.dataset.proj); render(); }
+  };
+  $('btnDelProject').onclick = () => {
+    const p = cur(); if (!p.id) return;
+    if (S.projects.length < 2) return alert('Je hebt minstens één project nodig.');
+    if (S.active && S.active.projectId === p.id) return alert('De klok loopt nog voor dit project. Check eerst uit.');
+    const ne = S.entries.filter(x => x.projectId === p.id).length, nc = S.costs.filter(x => x.projectId === p.id).length;
+    if (!confirm(`Project "${p.name}" verwijderen, inclusief ${ne} gelogde uren en ${nc} kosten? Dit kan niet ongedaan worden gemaakt.`)) return;
+    S.entries = S.entries.filter(x => x.projectId !== p.id); S.costs = S.costs.filter(x => x.projectId !== p.id);
+    S.projects = S.projects.filter(x => x.id !== p.id); setCurrent(S.projects[0].id);
+    syncCelebrated(); save(); render();
   };
 
   // ---------- export ----------
@@ -389,19 +461,20 @@
     // Factuurindeling: één regel per dag (uren, naar boven afgerond per half uur) + één regel per kostenpost
     const q = s => `"${String(s ?? '').replace(/"/g, '""')}"`;
     const nl = (n, d) => n.toFixed(d).replace(/\.?0+$/, '').replace('.', ',');
+    const P = cur();
     const rows = [['Datum', 'Omschrijving', 'Aantal', 'Prijs ex btw', 'Btw %', 'Totaal ex btw']];
     const days = {};
-    S.entries.filter(x => inView(x.start)).forEach(x => {
+    S.entries.filter(x => x.projectId === P.id && inView(x.start)).forEach(x => {
       const k = ymd(new Date(x.start)); (days[k] = days[k] || { ms: 0, notes: [] });
       days[k].ms += x.end - x.start; if (x.note && !days[k].notes.includes(x.note)) days[k].notes.push(x.note);
     });
     Object.keys(days).sort().forEach(k => {
       const h = Math.ceil(Math.round(days[k].ms / 60000) / 30) / 2, d = days[k]; // per dag naar boven afgerond op halve uren
-      rows.push([k, ['Uren ' + fmtDate(k + 'T12:00:00'), ...d.notes].join(' - '), nl(h, 4), nl(S.rate, 2), nl(S.btw, 2), (h * S.rate).toFixed(2).replace('.', ',')]);
+      rows.push([k, ['Uren ' + fmtDate(k + 'T12:00:00'), ...d.notes].join(' - '), nl(h, 4), nl(P.rate, 2), nl(P.btw, 2), (h * P.rate).toFixed(2).replace('.', ',')]);
     });
-    S.costs.filter(c => inView(costDate(c))).sort((a, b) => a.date.localeCompare(b.date)).forEach(c =>
-      rows.push([c.date, 'Extra kosten: ' + c.desc, '1', nl(c.amount, 2), nl(S.btw, 2), c.amount.toFixed(2).replace('.', ',')]));
-    download(`uren-${view.getFullYear()}-${pad(view.getMonth() + 1)}.csv`, '﻿' + rows.map(r => r.map(q).join(';')).join('\n'), 'text/csv');
+    S.costs.filter(c => c.projectId === P.id && inView(costDate(c))).sort((a, b) => a.date.localeCompare(b.date)).forEach(c =>
+      rows.push([c.date, 'Extra kosten: ' + c.desc, '1', nl(c.amount, 2), nl(P.btw, 2), c.amount.toFixed(2).replace('.', ',')]));
+    download(`uren-${slug(P.name)}-${view.getFullYear()}-${pad(view.getMonth() + 1)}.csv`, '﻿' + rows.map(r => r.map(q).join(';')).join('\n'), 'text/csv');
   };
   $('btnBackup').onclick = () => download(`urenlogger-backup-${ymd(new Date())}.json`, JSON.stringify(S, null, 2), 'application/json');
   $('btnRestore').onclick = () => $('fileRestore').click();
@@ -412,8 +485,13 @@
       if (!Array.isArray(d.entries) || !Array.isArray(d.costs)) throw 0;
       if (!confirm('Dit vervangt je huidige gegevens. Doorgaan?')) return;
       S = Object.assign(freshState(), d);
-      if (CLOUD) { const isId = x => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x.id); S.entries.forEach(x => { if (!isId(x)) x.id = uid(); }); S.costs.forEach(x => { if (!isId(x)) x.id = uid(); }); }
-      syncCelebrated(); save(); render();
+      if (CLOUD) {
+        const isId = x => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x.id);
+        const map = {}; (S.projects || []).forEach(x => { if (!isId(x)) { map[x.id] = uid(); x.id = map[x.id]; } });
+        const fix = x => { if (x.projectId && map[x.projectId]) x.projectId = map[x.projectId]; if (!isId(x)) x.id = uid(); };
+        S.entries.forEach(fix); S.costs.forEach(fix); if (S.active && S.active.projectId && map[S.active.projectId]) S.active.projectId = map[S.active.projectId];
+      }
+      ensureProjects(); syncCelebrated(); save(); render();
     } catch { alert('Dit is geen geldig back-upbestand.'); }
     e.target.value = '';
   };
@@ -552,9 +630,9 @@
   const ymOf = d => d.getFullYear() * 12 + d.getMonth();
   function liveMonthEarn() {
     const k = ymOf(new Date());
-    let ms = S.entries.filter(x => ymOf(new Date(x.start)) === k).reduce((a, x) => a + (x.end - x.start), 0);
-    if (S.active && ymOf(new Date(S.active.start)) === k) ms += Date.now() - S.active.start;
-    return earn(ms);
+    let sum = S.entries.filter(x => ymOf(new Date(x.start)) === k).reduce((a, x) => a + earn(x.end - x.start, proj(x.projectId) || NO_PROJECT), 0);
+    if (S.active && ymOf(new Date(S.active.start)) === k) sum += earn(Date.now() - S.active.start, proj(S.active.projectId) || NO_PROJECT);
+    return sum;
   }
   const monthKey = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
   const levelNow = () => Math.floor(liveMonthEarn() / 50 + 1e-9) * 50;
@@ -570,10 +648,10 @@
 
   // ---------- rendering ----------
   function monthTotals() {
-    const ents = S.entries.filter(x => inView(x.start));
+    const ents = S.entries.filter(x => x.projectId === curId && inView(x.start));
     let ms = ents.reduce((a, x) => a + (x.end - x.start), 0);
-    if (S.active && inView(S.active.start)) ms += Date.now() - S.active.start;
-    const costs = S.costs.filter(c => inView(costDate(c))).reduce((a, c) => a + c.amount, 0);
+    if (S.active && S.active.projectId === curId && inView(S.active.start)) ms += Date.now() - S.active.start;
+    const costs = S.costs.filter(c => c.projectId === curId && inView(costDate(c))).reduce((a, c) => a + c.amount, 0);
     return { ents, ms, costs };
   }
 
@@ -584,7 +662,7 @@
     const act = S.active, now = Date.now();
     if (act) {
       const ms = now - act.start;
-      $('liveEarn').innerHTML = moneyBig(earn(ms));
+      $('liveEarn').innerHTML = moneyBig(earn(ms, proj(act.projectId) || cur()));
       $('liveClock').textContent = hms(ms);
     }
     const t = monthTotals();
@@ -593,12 +671,27 @@
     $('mTotal').textContent = money(earn(t.ms) + t.costs);
     $('mCosts').textContent = money(t.costs);
     const sub = earn(t.ms) + t.costs;
-    $('btwLine').textContent = `Incl. ${S.btw}% btw: ${money(sub * (1 + S.btw / 100))} (btw ${money(sub * S.btw / 100)})`;
+    const P = cur();
+    $('btwLine').textContent = `Incl. ${P.btw}% btw: ${money(sub * (1 + P.btw / 100))} (btw ${money(sub * P.btw / 100)})`;
+    // overzicht van alle projecten deze maand (los van het gekozen project)
+    $('allProjects').textContent = S.projects.length < 2 ? '' : 'Alle projecten deze maand: ' + S.projects.map(p => {
+      let ms = S.entries.filter(x => x.projectId === p.id && inView(x.start)).reduce((a, x) => a + (x.end - x.start), 0);
+      if (S.active && S.active.projectId === p.id && inView(S.active.start)) ms += Date.now() - S.active.start;
+      const c = S.costs.filter(x => x.projectId === p.id && inView(costDate(x))).reduce((a, x) => a + x.amount, 0);
+      return `${p.name} ${money(earn(ms, p) + c)}`;
+    }).join(' · ');
   }
 
   function render() {
     const act = S.active;
-    $('rateLabel').textContent = money(S.rate).replace(',00','');
+    const P = cur(), AP = act ? (proj(act.projectId) || P) : P;   // de klok hoort bij het project waarvoor je bent ingecheckt
+    $('rateLabel').textContent = money(P.rate).replace(',00','');
+    document.querySelectorAll('.pj').forEach(el => el.textContent = P.name);
+    $('heroProj').textContent = AP.name;
+    $('projects').innerHTML = '<span class="lbl">Project</span>' + S.projects.map(p =>
+      `<button type="button" data-proj="${esc(p.id)}" aria-pressed="${p.id === P.id}">${act && act.projectId === p.id ? '<span class="dot" title="Klok loopt"></span>' : ''}${esc(p.name)}</button>`).join('') +
+      '<button type="button" class="add" id="btnAddProject">+ Project</button>';
+    $('btnIn').innerHTML = `<span class="o">▶</span> Inchecken`;
     $('hero').classList.toggle('active', !!act);
     $('tOut').disabled = !act;
     if (act && document.activeElement !== $('tIn')) { const d = new Date(act.start); $('tIn').value = pad(d.getHours()) + ':' + pad(d.getMinutes()); }
@@ -607,12 +700,12 @@
     $('statusTxt').textContent = act ? 'Ingecheckt' : 'Uitgecheckt';
     updateSaying();
     if (act) {
-      $('liveSub').textContent = `Sinds ${fmtTime(act.start)} · ${money(S.rate)} per uur`;
+      $('liveSub').textContent = `Sinds ${fmtTime(act.start)} · ${AP.name} · ${money(AP.rate)} per uur` + (AP.id !== P.id ? ` (de klok loopt voor een ander project dan je nu bekijkt)` : '');
       if (document.activeElement !== $('note')) $('note').value = act.note || '';
     } else {
       $('liveEarn').innerHTML = moneyBig(0);
       $('liveClock').textContent = '0:00:00';
-      $('liveSub').textContent = 'Klaar om te beginnen? Check in!';
+      $('liveSub').textContent = `Klaar om te beginnen? Check in voor ${P.name}.`;
     }
     $('monthTitle').textContent = view.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
 
@@ -622,7 +715,7 @@
       ents.map(x => `<tr><td>${fmtDate(x.start)}</td><td>${fmtTime(x.start)}–${fmtTime(x.end)}</td><td>${esc(x.note)}</td><td class="r">${hm(x.end - x.start)}</td><td class="r">${money(earn(x.end - x.start))}</td><td class="r"><button class="x" data-del="e:${x.id}" aria-label="Verwijder">✕</button></td></tr>`).join('') + '</tbody></table>'
       : '<div class="empty">Nog geen uren in deze maand.</div>';
 
-    const costs = S.costs.filter(c => inView(costDate(c))).sort((a, b) => b.date.localeCompare(a.date));
+    const costs = S.costs.filter(c => c.projectId === curId && inView(costDate(c))).sort((a, b) => b.date.localeCompare(a.date));
     $('listCosts').innerHTML = costs.length ? `<table><thead><tr><th>Datum</th><th>Omschrijving</th><th class="r">Ex btw</th><th></th></tr></thead><tbody>` +
       costs.map(c => `<tr><td>${fmtDate(costDate(c))}</td><td>${esc(c.desc)}</td><td class="r">${money(c.amount)}</td><td class="r"><button class="x" data-del="c:${c.id}" aria-label="Verwijder">✕</button></td></tr>`).join('') + '</tbody></table>'
       : '<div class="empty">Geen extra kosten in deze maand.</div>';
@@ -632,13 +725,15 @@
 
   // ================= inloggen + database (alleen als config.js is ingevuld) =================
   let sb = null, user = null, remote = null, pushTimer = 0, pushing = false, again = false, retryTimer = 0, syncHide = 0, started = false;
-  const REMOTE_EMPTY = () => ({ entries: new Map(), costs: new Map(), settings: '' });
+  const REMOTE_EMPTY = () => ({ projects: new Map(), entries: new Map(), costs: new Map(), settings: '' });
   const money2 = n => Math.round(Number(n) * 100) / 100;
-  const rowEntry = e => ({ id: e.id, user_id: user.id, started_at: new Date(e.start).toISOString(), ended_at: new Date(e.end).toISOString(), note: e.note || '' });
-  const rowCost = c => ({ id: c.id, user_id: user.id, cost_date: c.date, description: c.desc, amount: money2(c.amount) });
-  const rowSettings = () => ({ user_id: user.id, rate: S.rate, btw: S.btw, active: S.active || null, celebrated: S.celebrated || {} });
-  const fromEntry = r => ({ id: r.id, start: Date.parse(r.started_at), end: Date.parse(r.ended_at), note: r.note || '' });
-  const fromCost = r => ({ id: r.id, date: r.cost_date, desc: r.description, amount: Number(r.amount) });
+  const rowProject = p => ({ id: p.id, user_id: user.id, name: p.name, rate: p.rate, btw: p.btw });
+  const rowEntry = e => ({ id: e.id, user_id: user.id, project_id: e.projectId || null, started_at: new Date(e.start).toISOString(), ended_at: new Date(e.end).toISOString(), note: e.note || '' });
+  const rowCost = c => ({ id: c.id, user_id: user.id, project_id: c.projectId || null, cost_date: c.date, description: c.desc, amount: money2(c.amount) });
+  const rowSettings = () => ({ user_id: user.id, rate: (S.projects[0] || NO_PROJECT).rate || 65, btw: (S.projects[0] || NO_PROJECT).btw, active: S.active || null, celebrated: S.celebrated || {} });
+  const fromProject = r => ({ id: r.id, name: r.name, rate: Number(r.rate), btw: Number(r.btw) });
+  const fromEntry = r => ({ id: r.id, projectId: r.project_id || undefined, start: Date.parse(r.started_at), end: Date.parse(r.ended_at), note: r.note || '' });
+  const fromCost = r => ({ id: r.id, projectId: r.project_id || undefined, date: r.cost_date, desc: r.description, amount: Number(r.amount) });
 
   const syncMsg = (txt, keep) => {
     const el = $('syncState'); el.textContent = txt; el.classList.add('show');
@@ -654,20 +749,27 @@
   async function push() {
     if (!ready || !user) return;
     if (pushing) { again = true; return; }
-    pushing = true; clearTimeout(retryTimer); retryTimer = 0; syncMsg('Opslaan…', true);
+    pushing = true; clearTimeout(retryTimer); retryTimer = 0;
     try {
-      const eRows = S.entries.map(rowEntry), cRows = S.costs.map(rowCost), st = rowSettings();
+      const pRows = S.projects.map(rowProject), eRows = S.entries.map(rowEntry), cRows = S.costs.map(rowCost), st = rowSettings();
+      const pUp = pRows.filter(r => remote.projects.get(r.id) !== JSON.stringify(r));
       const eUp = eRows.filter(r => remote.entries.get(r.id) !== JSON.stringify(r));
       const cUp = cRows.filter(r => remote.costs.get(r.id) !== JSON.stringify(r));
       const eDel = [...remote.entries.keys()].filter(id => !eRows.some(r => r.id === id));
       const cDel = [...remote.costs.keys()].filter(id => !cRows.some(r => r.id === id));
+      const pDel = [...remote.projects.keys()].filter(id => !pRows.some(r => r.id === id));
       const stUp = remote.settings !== JSON.stringify(st);
+      if (!(stUp || pUp.length || eUp.length || cUp.length || eDel.length || cDel.length || pDel.length)) return;   // niets te doen
+      syncMsg('Opslaan…', true);
       const ck = r => { if (r.error) throw r.error; };
       if (stUp) ck(await sb.from('user_settings').upsert(st, { onConflict: 'user_id' }));
+      if (pUp.length) ck(await sb.from('projects').upsert(pUp, { onConflict: 'id' }));   // eerst projecten: uren en kosten verwijzen ernaar
       if (eUp.length) ck(await sb.from('entries').upsert(eUp, { onConflict: 'id' }));
       if (cUp.length) ck(await sb.from('costs').upsert(cUp, { onConflict: 'id' }));
       if (eDel.length) ck(await sb.from('entries').delete().in('id', eDel));
       if (cDel.length) ck(await sb.from('costs').delete().in('id', cDel));
+      if (pDel.length) ck(await sb.from('projects').delete().in('id', pDel));
+      pUp.forEach(r => remote.projects.set(r.id, JSON.stringify(r))); pDel.forEach(id => remote.projects.delete(id));
       eUp.forEach(r => remote.entries.set(r.id, JSON.stringify(r))); eDel.forEach(id => remote.entries.delete(id));
       cUp.forEach(r => remote.costs.set(r.id, JSON.stringify(r))); cDel.forEach(id => remote.costs.delete(id));
       remote.settings = JSON.stringify(st);
@@ -687,15 +789,17 @@
   }
   // Haalt alles op en maakt dit de nieuwe stand. Geeft terug of er al instellingen bestonden.
   async function pullAll() {
-    const [e, c, st] = await Promise.all([fetchAll('entries', 'started_at'), fetchAll('costs', 'cost_date'), sb.from('user_settings').select('*').maybeSingle()]);
+    const [p, e, c, st] = await Promise.all([fetchAll('projects', 'created_at'), fetchAll('entries', 'started_at'), fetchAll('costs', 'cost_date'), sb.from('user_settings').select('*').maybeSingle()]);
     if (st.error) throw st.error;
     const base = freshState();
     S = Object.assign(base, st.data ? { rate: Number(st.data.rate), btw: Number(st.data.btw), active: st.data.active || null, celebrated: st.data.celebrated || {} } : {},
-      { entries: e.map(fromEntry), costs: c.map(fromCost) });
+      { projects: p.map(fromProject), entries: e.map(fromEntry), costs: c.map(fromCost) });
     remote = REMOTE_EMPTY();
+    S.projects.forEach(x => remote.projects.set(x.id, JSON.stringify(rowProject(x))));
     S.entries.forEach(x => remote.entries.set(x.id, JSON.stringify(rowEntry(x))));
     S.costs.forEach(x => remote.costs.set(x.id, JSON.stringify(rowCost(x))));
     if (st.data) remote.settings = JSON.stringify(rowSettings());
+    ensureProjects();   // eerste keer met projecten: bestaande uren komen onder "Rechtspraak"; push() slaat dat op
     return !!st.data;
   }
 
@@ -730,10 +834,10 @@
     const token = ++handling; user = session.user; ready = false;
     try {
       const had = await pullAll(); if (token !== handling) return;
-      ready = true;
+      ready = true; schedulePush();
       await offerLocalImport();
       showApp(); render(); startOnce();
-      if (!had) { alert('Welkom! Stel eerst je uurtarief en btw-percentage in.'); $('btnSettings').click(); schedulePush(); }
+      if (!had) { alert('Welkom! Stel eerst de naam, het uurtarief en het btw-percentage van je project in.'); $('btnSettings').click(); schedulePush(); }
     } catch (err) {
       console.error(err); showAuth('login'); authMsg('Je gegevens konden niet worden opgehaald. ' + niceError(err));
     }
@@ -751,7 +855,8 @@
       if (!confirm(`Op dit apparaat staan nog ${oe.length} gelogde uren en ${oc.length} kosten van vóór het inloggen. Importeren in je account?`)) return;
       S.entries = oe.map(x => ({ id: uid(), start: x.start, end: x.end, note: x.note || '' }));
       S.costs = oc.map(x => ({ id: uid(), date: x.date, desc: x.desc, amount: Number(x.amount) }));
-      if (old.rate > 0) S.rate = old.rate; if (old.btw >= 0) S.btw = old.btw;
+      const p0 = S.projects[0]; if (old.rate > 0) p0.rate = old.rate; if (old.btw >= 0) p0.btw = old.btw;
+      S.entries.forEach(x => x.projectId = p0.id); S.costs.forEach(x => x.projectId = p0.id);
       syncCelebrated(); await push();
     } catch (err) { console.error(err); }
   }
@@ -761,7 +866,7 @@
     // andere apparaten: ververs als je terugkomt in dit tabblad
     const refresh = async () => {
       if (!user || !ready || dirty() || document.hidden) return;
-      try { await pullAll(); render(); } catch (err) { console.error(err); }
+      try { await pullAll(); schedulePush(); render(); } catch (err) { console.error(err); }
     };
     document.addEventListener('visibilitychange', refresh); window.addEventListener('online', () => { if (retryTimer) { clearTimeout(retryTimer); retryTimer = 0; push(); } else refresh(); });
   }
